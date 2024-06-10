@@ -5,7 +5,7 @@ def args_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('--model_pub', type=str, default='resnet18', help='model name')
     parser.add_argument('--model_priv', type=str, default='resnet18', help='model name')
-    # model name: cnn1d, resnet18, mobilenetv3_s, mobilenetv3_l, squeezenet, shufflenetv2, mnasnet, ghostnetv2, efficientv2_s, efficientv2_m
+    # model name: cnn1d, resnet18, mobilenetv3_s, mobilenetv3_l, squeezenet, mnasnet, ghostnetv2, efficientv2_s
     parser.add_argument('--epochs', type=int, default=100, help="rounds of training")
     parser.add_argument('--lr', type=float, default=0.001, help="learning rate")
     parser.add_argument('--frac', type=float, default=1, help="the fraction of clients")
