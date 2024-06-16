@@ -1,2 +1,2 @@
 # SFML
-An FL architecture that combines SL and ML
+An FL architecture that combines split learning and mutual learning
