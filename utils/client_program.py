@@ -70,10 +70,10 @@ class Client(object):
                 kl_global = KL_Loss(LogSoftmax(output_global), Softmax(output_local.detach()))
                 djs = 0.5 * kl_local + 0.5 * kl_global
 
-                loss_local = self.alpha * ce_local + (1 - self.alpha) * kl_local
-                loss_global = self.beta * ce_global + (1 - self.beta) * kl_global
-                loss_local.backward()
-                loss_global.backward()
+                loss_local = self.alpha * ce_local + (1 - self.alpha) * djs
+                loss_global = self.beta * ce_global + (1 - self.beta) * djs
+                loss_local.backward(retain_graph=True)
+                loss_global.backward(retain_graph=True)
                 acc_global = calculate_accuracy(output_global, labels)
 
                 dfx_server = server_fx.grad.clone().detach()
