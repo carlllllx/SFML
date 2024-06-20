@@ -7,10 +7,20 @@ from utils import globalval
 from utils.server_program import evaluate_server_cal, train_server_forward, train_server_backward, FedAvg
 from utils.add_func import calculate_accuracy
 
+
 KL_Loss = nn.KLDivLoss(reduction='batchmean')
 Softmax = nn.Softmax(dim=1)
 LogSoftmax = nn.LogSoftmax(dim=1)
 CE_Loss = nn.CrossEntropyLoss()
+
+
+def js_div(p_output, q_output, get_softmax=True):
+    KLDivLoss = nn.KLDivLoss(reduction='batchmean')
+    if get_softmax:
+        p_output = F.softmax(p_output)
+        q_output = F.softmax(q_output)
+    log_mean_output = ((p_output + q_output) / 2).log()
+    return (KLDivLoss(log_mean_output, p_output) + KLDivLoss(log_mean_output, q_output)) / 2
 
 
 class DatasetSplit(Dataset):
@@ -65,10 +75,10 @@ class Client(object):
                 output_local = local_net(images)
 
                 ce_local = CE_Loss(output_local, labels)
-                kl_local = KL_Loss(LogSoftmax(output_local), Softmax(output_global.detach()))
+                # kl_local = KL_Loss(LogSoftmax(output_local), Softmax(output_global.detach()))
                 ce_global = CE_Loss(output_global, labels)
-                kl_global = KL_Loss(LogSoftmax(output_global), Softmax(output_local.detach()))
-                djs = 0.5 * kl_local + 0.5 * kl_global
+                # kl_global = KL_Loss(LogSoftmax(output_global), Softmax(output_local.detach()))
+                djs = js_div(output_global, output_local)
 
                 loss_local = self.alpha * ce_local + (1 - self.alpha) * djs
                 loss_global = self.beta * ce_global + (1 - self.beta) * djs
